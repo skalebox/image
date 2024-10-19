@@ -126,7 +126,7 @@ export default class ImageTool implements BlockTool {
       onSelectFile: () => {
         this.uploader.uploadSelectedFile({
           onPreview: (src: string) => {
-            this.ui.showPreloader(src);
+            this.ui.fillImage(src);
           },
         });
       },
@@ -371,7 +371,9 @@ export default class ImageTool implements BlockTool {
    */
   private onUpload(response: UploadResponseFormat): void {
     if (response.success && Boolean(response.file)) {
-      this.image = response.file;
+      // update data block with the file information from the server response (data block)
+      this._data.file = response.file;
+      this.ui.fillImage(response.file.url);
     } else {
       this.uploadingFailed('incorrect response: ' + JSON.stringify(response));
     }
@@ -385,10 +387,9 @@ export default class ImageTool implements BlockTool {
     console.log('Image Tool: uploading failed because of', errorText);
 
     this.api.notifier.show({
-      message: this.api.i18n.t('Couldn’t upload image. Please try another.'),
+      message: this.api.i18n.t('Couldn\'t upload image. Please try another.'),
       style: 'error',
     });
-    this.ui.hidePreloader();
   }
 
   /**
@@ -423,23 +424,36 @@ export default class ImageTool implements BlockTool {
   }
 
   /**
-   * Show preloader and upload image file
+   * Show image and upload image file
    * @param file - file that is currently uploading (from paste)
    */
   private uploadFile(file: Blob): void {
+    // Show image instantly after selecting a file
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const src = (e.target as FileReader).result as string;
+
+      // prev to upload show image (deceive user)
+      this.ui.fillImage(src);
+    };
+    reader.readAsDataURL(file);
+
+    // Start uploading in the background
     this.uploader.uploadByFile(file, {
-      onPreview: (src: string) => {
-        this.ui.showPreloader(src);
-      },
+      onPreview: () => {}, // No need to do anything here now
     });
   }
 
   /**
-   * Show preloader and upload image by target url
+   * Show image and upload image by target url
    * @param url - url pasted
    */
   private uploadUrl(url: string): void {
-    this.ui.showPreloader(url);
+    // Show image instantly
+    this.ui.fillImage(url);
+
+    // Start uploading in the background
     this.uploader.uploadByUrl(url);
   }
 }

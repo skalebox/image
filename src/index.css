@@ -13,34 +13,6 @@
       vertical-align: bottom;
       display: block;
     }
-
-    &-preloader {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-size: cover;
-      margin: auto;
-      position: relative;
-      background-color: var(--bg-color);
-      background-position: center center;
-
-      &::after {
-        content: "";
-        position: absolute;
-        z-index: 3;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: 2px solid var(--bg-color);
-        border-top-color: var(--front-color);
-        left: 50%;
-        top: 50%;
-        margin-top: -30px;
-        margin-left: -30px;
-        animation: image-preloader-spin 2s infinite linear;
-        box-sizing: border-box;
-      }
-    }
   }
 
   &__caption {

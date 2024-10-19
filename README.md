@@ -3,6 +3,7 @@
 # Image Tool
 
 Image Block for the [Editor.js](https://editorjs.io).
+> Fork of the [EditorJs - Image](https://github.com/editor-js/image). Adapted to our specific needs.
 
 ![](https://capella.pics/63a03d04-3816-45b2-87b2-d85e556f0066.jpg)
 

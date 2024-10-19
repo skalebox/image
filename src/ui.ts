@@ -130,9 +130,7 @@ export default class Ui {
       fileButton: this.createFileButton(),
       imageEl: undefined,
       imagePreloader: make('div', this.CSS.imagePreloader),
-      caption: make('div', [this.CSS.input, this.CSS.caption], {
-        contentEditable: !this.readOnly,
-      }),
+      caption: make('div'),
     };
 
     /**
@@ -148,7 +146,7 @@ export default class Ui {
     this.nodes.caption.dataset.placeholder = this.config.captionPlaceholder;
     this.nodes.imageContainer.appendChild(this.nodes.imagePreloader);
     this.nodes.wrapper.appendChild(this.nodes.imageContainer);
-    this.nodes.wrapper.appendChild(this.nodes.caption);
+    // this.nodes.wrapper.appendChild(this.nodes.caption);
     this.nodes.wrapper.appendChild(this.nodes.fileButton);
   }
 
@@ -166,23 +164,14 @@ export default class Ui {
    * @param toolData - saved tool data
    */
   public render(toolData: ImageToolData): HTMLElement {
+    console.log('toolData', toolData);
     if (toolData.file === undefined || Object.keys(toolData.file).length === 0) {
       this.toggleStatus(UiState.Empty);
     } else {
-      this.toggleStatus(UiState.Uploading);
+      this.fillImage(toolData.file.url); // Mostrar la imagen inmediatamente
     }
 
     return this.nodes.wrapper;
-  }
-
-  /**
-   * Shows uploading preloader
-   * @param src - preview source
-   */
-  public showPreloader(src: string): void {
-    this.nodes.imagePreloader.style.backgroundImage = `url(${src})`;
-
-    this.toggleStatus(UiState.Uploading);
   }
 
   /**
@@ -198,60 +187,41 @@ export default class Ui {
    * @param url - image source
    */
   public fillImage(url: string): void {
-    /**
-     * Check for a source extension to compose element correctly: video tag for mp4, img — for others
-     */
     const tag = /\.mp4$/.test(url) ? 'VIDEO' : 'IMG';
 
     const attributes: { [key: string]: string | boolean } = {
       src: url,
     };
 
-    /**
-     * We use eventName variable because IMG and VIDEO tags have different event to be called on source load
-     * - IMG: load
-     * - VIDEO: loadeddata
-     */
     let eventName = 'load';
 
-    /**
-     * Update attributes and eventName if source is a mp4 video
-     */
     if (tag === 'VIDEO') {
-      /**
-       * Add attributes for playing muted mp4 as a gif
-       */
       attributes.autoplay = true;
       attributes.loop = true;
       attributes.muted = true;
       attributes.playsinline = true;
-
-      /**
-       * Change event to be listened
-       */
       eventName = 'loadeddata';
     }
 
-    /**
-     * Compose tag with defined attributes
-     */
-    this.nodes.imageEl = make(tag, this.CSS.imageEl, attributes);
+    // Create a temporary image element
+    const tempImageEl = make(tag, this.CSS.imageEl, attributes);
 
-    /**
-     * Add load event listener
-     */
-    this.nodes.imageEl.addEventListener(eventName, () => {
+    tempImageEl.addEventListener(eventName, () => {
+      // Once the new image is fully loaded, replace the visible image
+      if (this.nodes.imageEl) {
+        this.nodes.imageContainer.removeChild(this.nodes.imageEl);
+      }
+      this.nodes.imageEl = tempImageEl;
+      this.nodes.imageContainer.appendChild(this.nodes.imageEl);
+
       this.toggleStatus(UiState.Filled);
 
-      /**
-       * Preloader does not exists on first rendering with presaved data
-       */
       if (this.nodes.imagePreloader !== undefined) {
         this.nodes.imagePreloader.style.backgroundImage = '';
       }
     });
 
-    this.nodes.imageContainer.appendChild(this.nodes.imageEl);
+    // Do not add tempImageEl to the DOM until it is fully loaded
   }
 
   /**
