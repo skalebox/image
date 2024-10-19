@@ -388,11 +388,6 @@ export default class ImageTool implements BlockTool {
 
     // Clear the image preview on error
     this.ui.clearImage();
-
-    this.api.notifier.show({
-      message: this.api.i18n.t('Couldn\'t upload image. Please try another.'),
-      style: 'error',
-    });
   }
 
   /**
