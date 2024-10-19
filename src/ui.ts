@@ -206,6 +206,9 @@ export default class Ui {
     // Create a temporary image element
     const tempImageEl = make(tag, this.CSS.imageEl, attributes);
 
+    this.nodes.fileButton.style.display = 'none';
+    this.nodes.fileButton.style.pointerEvents = 'none';
+
     tempImageEl.addEventListener(eventName, () => {
       // Once the new image is fully loaded, replace the visible image
       if (this.nodes.imageEl) {
@@ -231,6 +234,24 @@ export default class Ui {
   public fillCaption(text: string): void {
     if (this.nodes.caption !== undefined) {
       this.nodes.caption.innerHTML = text;
+    }
+  }
+
+  /**
+   * Clears the image from the UI
+   */
+  public clearImage(): void {
+    // Implement the logic to clear the image from the UI
+    const imageElement = this.nodes.imageEl;
+
+    if (imageElement) {
+      // @ts-expect-error: src is a valid attribute for image elements
+      imageElement.src = ''; // Clear the image source
+      imageElement.style.display = 'none'; // Optionally hide the image element
+
+      // Make the file button visible and enabled
+      this.nodes.fileButton.style.display = 'flex';
+      this.nodes.fileButton.style.pointerEvents = 'auto';
     }
   }
 

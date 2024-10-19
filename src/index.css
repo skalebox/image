@@ -1,7 +1,7 @@
 .image-tool {
   --bg-color: #cdd1e0;
   --front-color: #388ae5;
-  --border-color: #e8e8eb;
+  --border-color: hsl(153, 60%, 53%);
 
   &__image {
     border-radius: 3px;

@@ -386,6 +386,9 @@ export default class ImageTool implements BlockTool {
   private uploadingFailed(errorText: string): void {
     console.log('Image Tool: uploading failed because of', errorText);
 
+    // Clear the image preview on error
+    this.ui.clearImage();
+
     this.api.notifier.show({
       message: this.api.i18n.t('Couldn\'t upload image. Please try another.'),
       style: 'error',
